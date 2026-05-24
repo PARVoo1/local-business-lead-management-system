@@ -3,10 +3,12 @@ package com.echohype.lead.management.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "leads")
+@Entity
+@Table(name = "leads")
 @Data
 public class Lead {
     @Id
@@ -25,6 +27,7 @@ public class Lead {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status=Status.NEW;
-    @Column(nullable = false)
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 }
