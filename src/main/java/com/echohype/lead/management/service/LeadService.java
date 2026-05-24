@@ -25,7 +25,6 @@ public class LeadService {
         return leadRepository.findAll(filter, sort);
     }
 
-
     public void saveLead(Lead lead) {
         leadRepository.save(lead);
     }
