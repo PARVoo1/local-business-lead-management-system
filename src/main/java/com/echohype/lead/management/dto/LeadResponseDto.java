@@ -1,20 +1,17 @@
-package com.echohype.lead.management.entity;
+package com.echohype.lead.management.dto;
 
-
-import jakarta.persistence.*;
+import com.echohype.lead.management.entity.Status;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "leads")
-@Data
-public class Lead {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
+@Data
+public class LeadResponseDto {
     @Column(length = 50, nullable = false)
     private String name;
 
