@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,16 @@ import java.util.List;
 public class LeadService {
 
     private final LeadRepository leadRepository;
+
+
+    public void updateStatus(Long id,Status status) {
+
+        Lead lead = leadRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException());
+        lead.setStatus(status);
+        leadRepository.save(lead);
+
+    }
 
     public List<LeadResponseDto> search(Status status, Integer month) {
         Specification<Lead> filter = Specification
