@@ -5,6 +5,7 @@ import com.echohype.lead.management.dto.LeadResponseDto;
 import com.echohype.lead.management.dto.WebhookDto;
 import com.echohype.lead.management.entity.Lead;
 import com.echohype.lead.management.entity.Status;
+import com.echohype.lead.management.exception.LeadNotFoundException;
 import com.echohype.lead.management.repository.LeadRepository;
 import com.echohype.lead.management.specification.LeadSpecification;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class LeadService {
     public void updateStatus(Long id,Status status) {
 
         Lead lead = leadRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException());
+                .orElseThrow(() -> new LeadNotFoundException(id));
         lead.setStatus(status);
         leadRepository.save(lead);
 
