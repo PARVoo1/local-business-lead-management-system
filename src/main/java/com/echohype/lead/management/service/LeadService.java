@@ -81,12 +81,13 @@ public class LeadService {
 
     private LeadResponseDto toDto(Lead lead) {
         LeadResponseDto leadResponseDto = new LeadResponseDto();
+        leadResponseDto.setId(lead.getId());
         leadResponseDto.setName(lead.getName());
         leadResponseDto.setEmail(lead.getEmail());
         leadResponseDto.setPhoneNumber(lead.getPhoneNumber());
         leadResponseDto.setBusinessName(lead.getBusinessName());
         leadResponseDto.setBiggestChallenge(lead.getBiggestChallenge());
-        leadResponseDto.setStatus(lead.getStatus());
+        leadResponseDto.setStatus(lead.getStatus().name());
         leadResponseDto.setCreatedAt(lead.getCreatedAt());
         return leadResponseDto;
     }
