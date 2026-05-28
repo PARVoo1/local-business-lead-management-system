@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://echohype-dashboard.vercel.app",
+                        "https://echo-hype-media-dashboard.vercel.app/",
                         "http://localhost:3000",
                         "http://localhost:5500"
                 )
