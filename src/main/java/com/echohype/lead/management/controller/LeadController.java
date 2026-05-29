@@ -18,6 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LeadController {
 
+
     private final LeadService leadService;
     @Value("${webhook.secret}")
     private String secret;

@@ -11,11 +11,11 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://echo-hype-media-dashboard.vercel.app/",
+                        "https://echo-hype-media-dashboard.vercel.app",
                         "http://localhost:3000",
                         "http://localhost:5500"
                 )
                 .allowedMethods("GET","POST","PATCH")
-                .allowedHeaders("Content-Type", "X-Webhook-Secret");
+                .allowedHeaders("Content-Type", "X-Webhook-Secret", "Authorization");
     }
 }
