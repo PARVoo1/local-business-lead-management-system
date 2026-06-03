@@ -16,7 +16,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void userLogin(@RequestBody UserDto user) {
+    public void userLogin(UserDto user) {
 
         User byUsername = userRepository.findByUsername(user.getUsername());
         if(!passwordEncoder.matches(user.getPassword(), byUsername.getPassword())) {
