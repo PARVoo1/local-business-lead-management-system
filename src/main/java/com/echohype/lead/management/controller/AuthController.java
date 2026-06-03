@@ -1,7 +1,10 @@
 package com.echohype.lead.management.controller;
 
 
-import org.springframework.beans.factory.annotation.Value;
+import com.echohype.lead.management.dto.UserDto;
+import com.echohype.lead.management.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,17 +15,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Value("${DASHBOARD_PASSWORD}")
-    private String dashboardPassword;
+    private final UserService userService;
 
 
     @PostMapping("/auth")
-    public ResponseEntity<String> auth(@RequestBody Map<String, String> body) {
-        if (dashboardPassword.equals(body.get("password"))) {
-            return ResponseEntity.ok("authenticated");
-        }
-        return ResponseEntity.status(401).build();
+    public ResponseEntity<String> auth(@RequestBody UserDto userDto){
+        userService.userLogin(userDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
