@@ -4,7 +4,6 @@ package com.echohype.lead.management.controller;
 import com.echohype.lead.management.dto.UserDto;
 import com.echohype.lead.management.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +21,8 @@ public class AuthController {
 
 
     @PostMapping("/auth")
-    public ResponseEntity<String> auth(@RequestBody UserDto userDto){
-        userService.userLogin(userDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<Map<String,String>> auth(@RequestBody UserDto userDto){
+        String jwt = userService.userLogin(userDto);
+        return ResponseEntity.ok(Map.of("token", jwt));
     }
 }
