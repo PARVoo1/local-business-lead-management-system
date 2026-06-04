@@ -1,12 +1,13 @@
 package com.echohype.lead.management.service;
 
-import com.echohype.lead.management.dto.FieldDto;
 import com.echohype.lead.management.dto.LeadResponseDto;
-import com.echohype.lead.management.dto.WebhookDto;
+import com.echohype.lead.management.dto.WebsiteLeadDto;
 import com.echohype.lead.management.entity.Lead;
 import com.echohype.lead.management.entity.Status;
+import com.echohype.lead.management.entity.User;
 import com.echohype.lead.management.exception.LeadNotFoundException;
 import com.echohype.lead.management.repository.LeadRepository;
+import com.echohype.lead.management.repository.UserRepository;
 import com.echohype.lead.management.specification.LeadSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,21 +24,28 @@ import java.util.List;
 public class LeadService {
 
     private final LeadRepository leadRepository;
+    private final UserRepository userRepository;
 
 
-    public void updateStatus(Long id,Status status) {
+    public void updateStatus(Long id,Status status,String loggedInUserName) {
 
         Lead lead = leadRepository.findById(id)
                 .orElseThrow(() -> new LeadNotFoundException(id));
+        if (!lead.getUser().getUsername().equals(loggedInUserName)) {
+            log.warn("Security Alert: User {} attempted to modify lead {} owned by {}",
+                    loggedInUserName, id, lead.getUser().getUsername());
+            throw new SecurityException("You do not have permission to modify this lead.");
+        }
         lead.setStatus(status);
         leadRepository.save(lead);
 
     }
 
-    public List<LeadResponseDto> search(Status status, Integer month) {
+    public List<LeadResponseDto> search(Status status, Integer month, String userName) {
         Specification<Lead> filter = Specification
                 .allOf(LeadSpecification.hasStatus(status)
-                        ,LeadSpecification.hasMonth(month));
+                        ,LeadSpecification.hasMonth(month),
+                        LeadSpecification.hasUsername(userName));
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         List<Lead> all = leadRepository.findAll(filter, sort);
 
@@ -45,46 +53,29 @@ public class LeadService {
 
     }
 
-    public void saveLead(WebhookDto dto) {
-        if (dto == null || dto.getFields() == null) {
+    public void saveLead(WebsiteLeadDto dto, String userName) {
+        if (dto == null) {
+            return;
+        }
+
+        if (dto.getName() == null || dto.getName().trim().isEmpty() ||
+                dto.getBiggestChallenge() == null || dto.getBiggestChallenge().trim().isEmpty()) {
+            log.error("Form rejected: Missing mandatory Name or Challenge.");
+            return;
+        }
+        User businessOwner = userRepository.findByUsername(userName);
+        if (businessOwner == null) {
+            log.error("Form rejected: Business owner '{}' not found.", userName);
             return;
         }
 
         Lead newLead = new Lead();
-
-        for (FieldDto field : dto.getFields()) {
-
-
-            if (field.getId() == null || field.getValue() == null || field.getValue().trim().isEmpty()) {
-                continue;
-            }
-
-            String fieldId = field.getId().toLowerCase();
-            String fieldValue = field.getValue().trim();
-
-            switch (fieldId) {
-                case "name":
-                    newLead.setName(fieldValue);
-                    break;
-                case "email":
-                    newLead.setEmail(fieldValue);
-                    break;
-                case "phone":
-                    newLead.setPhoneNumber(fieldValue);
-                    break;
-                case "business_name":
-                    newLead.setBusinessName(fieldValue);
-                    break;
-                case "biggest_challenge":
-                    newLead.setBiggestChallenge(fieldValue);
-                    break;
-            }
-        }
-
-        if (newLead.getName() == null || newLead.getBiggestChallenge() == null) {
-            log.error("Form rejected: Missing mandatory Name or Challenge.");
-            return;
-        }
+        newLead.setName(dto.getName());
+        newLead.setEmail(dto.getEmail());
+        newLead.setPhoneNumber(dto.getPhone());
+        newLead.setBusinessName(dto.getBusinessName());
+        newLead.setBiggestChallenge(dto.getBiggestChallenge());
+        newLead.setUser(businessOwner);
 
         leadRepository.save(newLead);
         log.info("Successfully saved new lead: " + newLead.getName());

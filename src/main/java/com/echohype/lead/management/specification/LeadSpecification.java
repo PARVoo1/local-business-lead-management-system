@@ -22,6 +22,14 @@ public class LeadSpecification {
             );
         };
     }
+    public static Specification<Lead> hasUsername(String username) {
+        return (root, query, criteriaBuilder) -> {
+            if (username == null || username.isEmpty()) {
+                return null;
+            }
+            return criteriaBuilder.equal(root.get("user").get("username"), username);
+        };
+    }
 
 
 }
