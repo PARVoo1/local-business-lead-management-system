@@ -1,19 +1,17 @@
 package com.echohype.lead.management.service;
 
-
-import com.echohype.lead.management.dto.FieldDto;
-import com.echohype.lead.management.dto.WebhookDto;
+import com.echohype.lead.management.dto.WebsiteLeadDto;
 import com.echohype.lead.management.entity.Lead;
 import com.echohype.lead.management.entity.Status;
+import com.echohype.lead.management.entity.User;
 import com.echohype.lead.management.repository.LeadRepository;
+import com.echohype.lead.management.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,35 +22,29 @@ class LeadServiceTest {
 
     @Mock
     private LeadRepository leadRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private LeadService leadService;
 
     @Test
-    void validPayload(){
-        FieldDto nameField = new FieldDto();
-        nameField.setId("name");
-        nameField.setValue("Rahul Sharma");
+    void validPayload() {
 
-        FieldDto emailField = new FieldDto();
-        emailField.setId("email");
-        emailField.setValue("rahul@gmail.com");
+        WebsiteLeadDto dto = new WebsiteLeadDto();
+        dto.setName("Rahul Sharma");
+        dto.setEmail("rahul@gmail.com");
+        dto.setPhone("9876543210");
+        dto.setBusinessName("Rahul Stores");
+        dto.setBiggestChallenge("Not getting leads from Instagram");
 
-        FieldDto phoneField = new FieldDto();
-        phoneField.setId("phone");
-        phoneField.setValue("9876543210");
+        User mockUser = new User();
+        mockUser.setUsername("rahul_stores");
+        when(userRepository.findByUsername("rahul_stores")).thenReturn(mockUser);
 
-        FieldDto businessField = new FieldDto();
-        businessField.setId("business_name");
-        businessField.setValue("Rahul Stores");
 
-        FieldDto challengeField = new FieldDto();
-        challengeField.setId("biggest_challenge");
-        challengeField.setValue("Not getting leads from Instagram");
-
-        WebhookDto dto = new WebhookDto();
-        dto.setFields(List.of(nameField, emailField, phoneField, businessField, challengeField));
-
-        leadService.saveLead(dto);
+        leadService.saveLead(dto, "rahul_stores");
 
         ArgumentCaptor<Lead> captor = ArgumentCaptor.forClass(Lead.class);
         verify(leadRepository, times(1)).save(captor.capture());
@@ -64,35 +56,35 @@ class LeadServiceTest {
         assertThat(savedLead.getBusinessName()).isEqualTo("Rahul Stores");
         assertThat(savedLead.getBiggestChallenge()).isEqualTo("Not getting leads from Instagram");
         assertThat(savedLead.getStatus()).isEqualTo(Status.NEW);
+
+
+        assertThat(savedLead.getUser().getUsername()).isEqualTo("rahul_stores");
     }
 
     @Test
-    void invalidPayload(){
+    void invalidPayload_missingFields() {
+        WebsiteLeadDto dto = new WebsiteLeadDto();
+        dto.setName(null);
+        dto.setEmail("rahul@gmail.com");
+        dto.setPhone("9876543210");
+        dto.setBusinessName("Rahul Stores");
+        dto.setBiggestChallenge(null);
 
-        FieldDto nameField = new FieldDto();
-        nameField.setId("name");
-        nameField.setValue(null);
+        leadService.saveLead(dto, "rahul_stores");
+        verify(leadRepository, never()).save(any());
+    }
 
-        FieldDto emailField = new FieldDto();
-        emailField.setId("email");
-        emailField.setValue("rahul@gmail.com");
+    @Test
+    void invalidPayload_userNotFound() {
+        WebsiteLeadDto dto = new WebsiteLeadDto();
+        dto.setName("Rahul Sharma");
+        dto.setEmail("rahul@gmail.com");
+        dto.setPhone("9876543210");
+        dto.setBusinessName("Rahul Stores");
+        dto.setBiggestChallenge("Not getting leads from Instagram");
+        when(userRepository.findByUsername("wrong_user_typo")).thenReturn(null);
 
-        FieldDto phoneField = new FieldDto();
-        phoneField.setId("phone");
-        phoneField.setValue("9876543210");
-
-        FieldDto businessField = new FieldDto();
-        businessField.setId("business_name");
-        businessField.setValue("Rahul Stores");
-
-        FieldDto challengeField = new FieldDto();
-        challengeField.setId("biggest_challenge");
-        challengeField.setValue(null);
-
-        WebhookDto dto = new WebhookDto();
-        dto.setFields(List.of(nameField, emailField, phoneField, businessField, challengeField));
-
-        leadService.saveLead(dto);
+        leadService.saveLead(dto, "wrong_user_typo");
 
         verify(leadRepository, never()).save(any());
     }
