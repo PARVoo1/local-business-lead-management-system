@@ -2,6 +2,7 @@ package com.echohype.lead.management.controller;
 
 import com.echohype.lead.management.dto.LeadResponseDto;
 import com.echohype.lead.management.dto.WebsiteLeadDto;
+import com.echohype.lead.management.dto.WhatsAppLeadDto;
 import com.echohype.lead.management.entity.Status;
 import com.echohype.lead.management.exception.LeadNotFoundException;
 import com.echohype.lead.management.service.LeadService;
@@ -48,8 +49,8 @@ public class LeadController {
     @PostMapping("/whatsapp/{userName}")
     public ResponseEntity<Void> whatsappLead(
             @PathVariable String userName,
-            @RequestBody WebsiteLeadDto dto) {
-        leadService.saveWhatsappLead(userName,dto);
+            @RequestBody WhatsAppLeadDto dto) {
+        leadService.saveWhatsappLead(dto, userName);
         return ResponseEntity.ok().build();
 
     }

@@ -2,6 +2,7 @@ package com.echohype.lead.management.service;
 
 import com.echohype.lead.management.dto.LeadResponseDto;
 import com.echohype.lead.management.dto.WebsiteLeadDto;
+import com.echohype.lead.management.dto.WhatsAppLeadDto;
 import com.echohype.lead.management.entity.Lead;
 import com.echohype.lead.management.entity.Status;
 import com.echohype.lead.management.entity.User;
@@ -79,6 +80,41 @@ public class LeadService {
 
         leadRepository.save(newLead);
         log.info("Successfully saved new lead: " + newLead.getName());
+    }
+    public void saveWhatsappLead(WhatsAppLeadDto dto, String userName) {
+        if(dto == null || dto.getEntry()==null||dto.getEntry().isEmpty()) {
+            return;
+        }
+        var changes = dto.getEntry().getFirst().getChanges();
+
+        if (changes == null || changes.isEmpty()) {
+            return;
+        }
+        var value = changes.getFirst().getValue();
+        if (value.getMessages() == null || value.getContacts() == null) {
+            return;
+        }
+
+        User businessOwner = userRepository.findByUsername(userName);
+        if (businessOwner == null) {
+            return;
+        }
+        String clientName = value.getContacts().getFirst().getProfile().getName();
+        String clientPhone = value.getContacts().getFirst().getWa_id();
+        String message = value.getMessages().getFirst().getText().getBody();
+
+        Lead newLead = new Lead();
+
+        newLead.setName(clientName);
+        newLead.setPhoneNumber("WA"+clientPhone);
+        newLead.setBiggestChallenge(message);
+        newLead.setBusinessName("WhatsApp DM");
+        newLead.setEmail("N/A");
+        newLead.setStatus(Status.NEW);
+        newLead.setUser(businessOwner);
+
+        leadRepository.save(newLead);
+
     }
 
 
