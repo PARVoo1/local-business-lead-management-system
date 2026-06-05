@@ -34,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth").permitAll()
                         .requestMatchers("/api/generate-hash").permitAll()
                         .requestMatchers("/api/leads/website/**").permitAll()
+                        .requestMatchers("/api/leads/whatsapp/**").permitAll()
+                        .requestMatchers("/api/leads/instagram/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
