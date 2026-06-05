@@ -54,6 +54,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "https://echo-hype-media-dashboard.vercel.app",
+                "https://demo.parvkhandelwal.me/",
                 "http://localhost:3000",
                 "http://localhost:5173",
                 "http://localhost:5500",
