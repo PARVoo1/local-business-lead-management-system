@@ -123,7 +123,14 @@ public class LeadService {
             return;
         }
         var messagingList=dto.getEntry().getFirst().getMessaging();
+
+        if (messagingList == null || messagingList.isEmpty()) {
+            return;
+        }
+
         var messaging = messagingList.getFirst();
+
+
 
         if (messaging.getMessage() == null || messaging.getMessage().getText() == null) {
             return;
