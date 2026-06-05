@@ -1,5 +1,6 @@
 package com.echohype.lead.management.controller;
 
+import com.echohype.lead.management.dto.InstagramLeadDto;
 import com.echohype.lead.management.dto.LeadResponseDto;
 import com.echohype.lead.management.dto.WebsiteLeadDto;
 import com.echohype.lead.management.dto.WhatsAppLeadDto;
@@ -55,6 +56,15 @@ public class LeadController {
 
     }
 
+    @PostMapping("/instagram/{userName}")
+    public ResponseEntity<Void> instagramLead(
+            @PathVariable String userName,
+            @RequestBody InstagramLeadDto dto) {
+
+        leadService.saveInstagramLead(dto, userName);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PostMapping("/website/{userName}")
     public ResponseEntity<Void>saveLead(
@@ -70,6 +80,7 @@ public class LeadController {
         }
 
     }
+
 
 
     @GetMapping
