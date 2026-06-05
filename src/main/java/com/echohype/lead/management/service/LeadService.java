@@ -1,5 +1,6 @@
 package com.echohype.lead.management.service;
 
+import com.echohype.lead.management.dto.InstagramLeadDto;
 import com.echohype.lead.management.dto.LeadResponseDto;
 import com.echohype.lead.management.dto.WebsiteLeadDto;
 import com.echohype.lead.management.dto.WhatsAppLeadDto;
@@ -110,6 +111,37 @@ public class LeadService {
         newLead.setBiggestChallenge(message);
         newLead.setBusinessName("WhatsApp DM");
         newLead.setEmail("N/A");
+        newLead.setStatus(Status.NEW);
+        newLead.setUser(businessOwner);
+
+        leadRepository.save(newLead);
+
+    }
+    public void saveInstagramLead(InstagramLeadDto dto, String userName) {
+
+        if(dto==null || dto.getEntry()==null||dto.getEntry().isEmpty()) {
+            return;
+        }
+        var messagingList=dto.getEntry().getFirst().getMessaging();
+        var messaging = messagingList.getFirst();
+
+        if (messaging.getMessage() == null || messaging.getMessage().getText() == null) {
+            return;
+        }
+
+        User businessOwner = userRepository.findByUsername(userName);
+        if (businessOwner == null) {
+            return;
+        }
+        String instagramId = messaging.getSender().getId();
+        String messageBody = messaging.getMessage().getText();
+
+        Lead newLead = new Lead();
+        newLead.setName("Instagram User");
+        newLead.setPhoneNumber("IG ID: " + instagramId);
+        newLead.setEmail("N/A");
+        newLead.setBusinessName("Instagram DM");
+        newLead.setBiggestChallenge(messageBody);
         newLead.setStatus(Status.NEW);
         newLead.setUser(businessOwner);
 
