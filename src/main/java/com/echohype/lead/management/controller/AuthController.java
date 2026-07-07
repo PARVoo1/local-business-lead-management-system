@@ -18,6 +18,11 @@ public class AuthController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @GetMapping("/health-check")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("Render is awake");
+    }
+
     @PostMapping("/auth")
     public ResponseEntity<Map<String, String>> auth(@RequestBody UserDto userDto) {
         try {
