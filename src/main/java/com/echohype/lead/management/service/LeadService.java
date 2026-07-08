@@ -29,6 +29,7 @@ public class LeadService {
 
     private final LeadRepository leadRepository;
     private final UserRepository userRepository;
+    private static final String OWNER_NOT_FOUND ="Form rejected: Business owner '{}' not found.";
 
 
     public void updateStatus(Long id,Status status,String loggedInUserName) {
@@ -69,7 +70,7 @@ public class LeadService {
         }
         User businessOwner = userRepository.findByUsername(userName);
         if (businessOwner == null) {
-            log.error("Form rejected: Business owner '{}' not found.", userName);
+            log.error(OWNER_NOT_FOUND, userName);
             return;
         }
 
@@ -95,11 +96,13 @@ public class LeadService {
         }
         var value = changes.getFirst().getValue();
         if (value.getMessages() == null || value.getContacts() == null) {
+            log.error("Form rejected: Missing mandatory Contacts.");
             return;
         }
 
         User businessOwner = userRepository.findByUsername(userName);
         if (businessOwner == null) {
+            log.error(OWNER_NOT_FOUND, userName);
             return;
         }
         String clientName = value.getContacts().getFirst().getProfile().getName();
@@ -131,6 +134,7 @@ public class LeadService {
 
         User businessOwner = userRepository.findByUsername(userName);
         if (businessOwner == null) {
+            log.error(OWNER_NOT_FOUND, userName);
             return;
         }
         String instagramId = messaging.getSender().getId();
