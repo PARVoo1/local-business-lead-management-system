@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/leads/whatsapp/**").permitAll()
                         .requestMatchers("/api/leads/instagram/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/api/health-check/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
