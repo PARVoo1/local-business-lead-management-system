@@ -17,7 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -104,17 +106,8 @@ public class LeadService {
         String clientPhone = value.getContacts().getFirst().getWa_id();
         String message = value.getMessages().getFirst().getText().getBody();
 
-        Lead newLead = new Lead();
 
-        newLead.setName(clientName);
-        newLead.setPhoneNumber("WA"+clientPhone);
-        newLead.setBiggestChallenge(message);
-        newLead.setBusinessName("WhatsApp DM");
-        newLead.setEmail("N/A");
-        newLead.setStatus(Status.NEW);
-        newLead.setUser(businessOwner);
-
-        leadRepository.save(newLead);
+       processSocialLead(businessOwner, "WA"+clientPhone, clientName, "WhatsApp DM", message);
 
     }
     public void saveInstagramLead(InstagramLeadDto dto, String userName) {
@@ -143,16 +136,7 @@ public class LeadService {
         String instagramId = messaging.getSender().getId();
         String messageBody = messaging.getMessage().getText();
 
-        Lead newLead = new Lead();
-        newLead.setName("Instagram User");
-        newLead.setPhoneNumber("IG ID: " + instagramId);
-        newLead.setEmail("N/A");
-        newLead.setBusinessName("Instagram DM");
-        newLead.setBiggestChallenge(messageBody);
-        newLead.setStatus(Status.NEW);
-        newLead.setUser(businessOwner);
-
-        leadRepository.save(newLead);
+        processSocialLead(businessOwner, "IG ID: " + instagramId, "Instagram User", "Instagram DM", messageBody);
 
     }
 
@@ -168,6 +152,37 @@ public class LeadService {
         leadResponseDto.setStatus(lead.getStatus().name());
         leadResponseDto.setCreatedAt(lead.getCreatedAt());
         return leadResponseDto;
+    }
+
+    private void processSocialLead(User businessOwner, String platformId, String fallBackName, String businessChannel, String newMessage) {
+        LocalDateTime twoMonthsAgo = LocalDateTime.now().minusMonths(2);
+
+        Optional<Lead> existingLeadOpt = leadRepository
+                .findFirstByPhoneNumberAndUserAndCreatedAtAfterOrderByCreatedAtDesc(platformId, businessOwner, twoMonthsAgo);
+
+        if (existingLeadOpt.isPresent()) {
+            Lead existingLead = existingLeadOpt.get();
+
+            String expandedChallenge = existingLead.getBiggestChallenge() + "\n[Follow-up]: " + newMessage;
+            existingLead.setBiggestChallenge(expandedChallenge);
+
+            existingLead.setStatus(Status.NEW);
+
+            leadRepository.save(existingLead);
+            log.info("Appended follow-up text to existing lead ID: {} via {}", existingLead.getId(), businessChannel);
+        } else {
+            Lead newLead = new Lead();
+            newLead.setName(fallBackName);
+            newLead.setPhoneNumber(platformId);
+            newLead.setEmail("N/A");
+            newLead.setBusinessName(businessChannel);
+            newLead.setBiggestChallenge(newMessage);
+            newLead.setStatus(Status.NEW);
+            newLead.setUser(businessOwner);
+
+            leadRepository.save(newLead);
+            log.info("Registered a brand new sales lead via {}", businessChannel);
+        }
     }
 
 
