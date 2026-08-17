@@ -51,7 +51,7 @@ public class LeadController {
     public ResponseEntity<Void> whatsappLead(
             @PathVariable String userName,
             @RequestBody WhatsAppLeadDto dto) {
-        leadService.saveWhatsappLead(dto, userName);
+        leadService.saveWhatsappLead(dto);
         return ResponseEntity.ok().build();
 
     }
@@ -61,7 +61,7 @@ public class LeadController {
             @PathVariable String userName,
             @RequestBody InstagramLeadDto dto) {
 
-        leadService.saveInstagramLead(dto, userName);
+        leadService.saveInstagramLead(dto);
         return ResponseEntity.ok().build();
     }
 
