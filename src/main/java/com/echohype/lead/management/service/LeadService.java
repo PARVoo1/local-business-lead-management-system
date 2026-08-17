@@ -100,7 +100,8 @@ public class LeadService {
             return;
         }
 
-        User businessOwner = userRepository.findByUsername(userName);
+        String receivingPhoneNumberId = value.getMetadata().getPhoneNumberId();
+        User businessOwner = userRepository.findByWhatsappNumberId(receivingPhoneNumberId);
         if (businessOwner == null) {
             log.error(OWNER_NOT_FOUND, userName);
             return;
