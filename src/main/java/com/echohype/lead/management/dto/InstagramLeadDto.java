@@ -15,6 +15,7 @@ public class InstagramLeadDto {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Entry {
+        private String id;
         private List<Messaging> messaging;
     }
 
@@ -22,12 +23,19 @@ public class InstagramLeadDto {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Messaging {
         private Sender sender;
+        private Recipient recipient;
         private Message message;
     }
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Sender {
+        private String id;
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Recipient {
         private String id;
     }
 
