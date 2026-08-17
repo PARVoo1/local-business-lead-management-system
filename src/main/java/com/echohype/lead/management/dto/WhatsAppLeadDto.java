@@ -1,6 +1,7 @@
 package com.echohype.lead.management.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -27,8 +28,20 @@ public class WhatsAppLeadDto {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Value {
+        private Metadata metadata;
+
         private List<Contact> contacts;
         private List<Message> messages;
+    }
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Metadata {
+        @JsonProperty("display_phone_number")
+        private String displayPhoneNumber;
+
+        @JsonProperty("phone_number_id")
+        private String phoneNumberId;
     }
 
     @Data
