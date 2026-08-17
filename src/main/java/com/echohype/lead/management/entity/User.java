@@ -20,7 +20,14 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String whatsappNumberId;
+
+    private String instagramId;
+
     private String phoneNumber;
+
+    @Column(length = 512)
+    private String metaAccessToken;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lead> leads;
