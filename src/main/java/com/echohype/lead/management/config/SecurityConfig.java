@@ -55,7 +55,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://*.vercel.app",
                 "https://echo-hype-media-dashboard.vercel.app",
                 "https://demo.parvkhandelwal.me",
                 "http://localhost:3000",
