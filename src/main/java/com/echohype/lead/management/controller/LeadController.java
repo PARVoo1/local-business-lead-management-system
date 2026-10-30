@@ -47,9 +47,8 @@ public class LeadController {
         return ResponseEntity.status(403).build();
     }
 
-    @PostMapping("/whatsapp/{userName}")
+    @PostMapping("/whatsapp/")
     public ResponseEntity<Void> whatsappLead(
-            @PathVariable String userName,
             @RequestBody WhatsAppLeadDto dto) {
         leadService.saveWhatsappLead(dto);
         return ResponseEntity.ok().build();
